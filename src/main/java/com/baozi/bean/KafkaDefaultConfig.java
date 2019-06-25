@@ -1,6 +1,6 @@
-package com.laidantech.bean;
+package com.baozi.bean;
 
-import com.laidantech.serializer.DefaultDeserializer;
+import com.baozi.serializer.DefaultDeserializer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -30,31 +30,36 @@ public class KafkaDefaultConfig {
     @Value("${spring.kafka.consumer.listener.concurrency}")
     private Integer concurrency;
 
-    private Class keyDeserializerClass;
+    private DefaultDeserializer<?> keyDeserializerClass;
 
-    private Class valueDeserializerClass;
+    private DefaultDeserializer<?> valueDeserializerClass;
 
     @Resource
     private SpringContext context;
 
-    public void setKeyDeserializerClass(Class keyDeserializerClass) {
+    public void setKeyDeserializerClass(DefaultDeserializer<?> keyDeserializerClass) {
         this.keyDeserializerClass = keyDeserializerClass;
+        // 设置了序列化类后将bean进行更新，更新其序列化器
+        this.updateSerializer();
     }
 
-    public void setValueDeserializerClass(Class valueDeserializerClass) {
+    public void setValueDeserializerClass(DefaultDeserializer<?> valueDeserializerClass) {
         this.valueDeserializerClass = valueDeserializerClass;
         // 设置了序列化类后将bean进行更新，更新其序列化器
+        this.updateSerializer();
+    }
+
+    private void updateSerializer(){
+        // 设置了序列化类后将bean进行更新，更新其序列化器
         ConcurrentKafkaListenerContainerFactory container = (ConcurrentKafkaListenerContainerFactory) context.getBean("batchContainerFactory");
-        container.setConsumerFactory(new DefaultKafkaConsumerFactory(consumerProps()));
+        container.setConsumerFactory(new DefaultKafkaConsumerFactory(consumerProps(),keyDeserializerClass,valueDeserializerClass));
     }
 
     private Map<String, Object> consumerProps() {
-        Map<String, Object> props = new HashMap<>(5);
+        Map<String, Object> props = new HashMap<>(3);
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, host);
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
         props.put(ConsumerConfig.GROUP_ID_CONFIG,groupId);
-        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, (keyDeserializerClass==null)? DefaultDeserializer.class:keyDeserializerClass);
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, (valueDeserializerClass==null)? DefaultDeserializer.class:valueDeserializerClass);
         return props;
     }
 
@@ -67,7 +72,7 @@ public class KafkaDefaultConfig {
         container.setConcurrency(concurrency);
         //设置为批量监听
         container.setBatchListener(true);
-        container.setConsumerFactory(new DefaultKafkaConsumerFactory(consumerProps()));
+        container.setConsumerFactory(new DefaultKafkaConsumerFactory(consumerProps(),keyDeserializerClass,valueDeserializerClass));
         return container;
     }
 

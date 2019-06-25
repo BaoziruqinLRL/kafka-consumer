@@ -1,4 +1,4 @@
-package com.laidantech.serializer;
+package com.baozi.serializer;
 
 import org.apache.kafka.common.serialization.Deserializer;
 

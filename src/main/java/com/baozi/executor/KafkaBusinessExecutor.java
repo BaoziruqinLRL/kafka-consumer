@@ -1,4 +1,4 @@
-package com.laidantech.executor;
+package com.baozi.executor;
 
 /**
  * @Description: kafka业务执行接口

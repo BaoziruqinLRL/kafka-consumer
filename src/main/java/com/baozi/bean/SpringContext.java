@@ -1,4 +1,4 @@
-package com.laidantech.bean;
+package com.baozi.bean;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
