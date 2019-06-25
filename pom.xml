@@ -5,8 +5,8 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.laidantech.commons.kafka.consumer</groupId>
-    <artifactId>laidantech-kafka-consumer</artifactId>
+    <groupId>com.baozi.commons.kafka.consumer</groupId>
+    <artifactId>kafka-consumer</artifactId>
     <version>1.0-SNAPSHOT</version>
     <description>kafka消费者</description>
 
